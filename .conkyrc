@@ -1,0 +1,101 @@
+background none
+font Snap.se:size=8
+xftfont Snap.se:size=8
+use_xft yes
+xftalpha 0.1
+update_interval 1.0
+total_run_times 0
+own_window yes
+own_window_type normal
+own_window_transparent yes
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+double_buffer yes
+draw_shades no
+draw_outline no
+draw_borders no
+draw_graph_borders yes
+minimum_size 300 6
+maximum_width 300
+default_color ffffff
+default_shade_color 000000
+default_outline_color 000000
+alignment top_right
+gap_x 10
+gap_y 10
+no_buffers yes
+cpu_avg_samples 8
+override_utf8_locale no
+uppercase no # set to yes if you want all text to be in uppercase
+use_spacer none
+own_window_argb_visual yes
+
+TEXT
+#Aqui empieza la configuracion de los datos que se muestran
+#El primero es el nombre del host
+${font Ubuntu:style=bold:size=20}$alignc $nodename
+${font Ubuntu:style=bold:size=10}Uptime: $uptime ${alignr}Load: $loadavg
+
+#Esto nos muestra el modelo del procesador y una barra de cada uno de ellos con su uso
+${font Ubuntu:style=bold:size=12}CPU ${execi 1000 cat /proc/cpuinfo | grep 'model name' | sed -e 's/model name.*: //'| uniq | cut -c 1-26} $hr
+${font Ubuntu:style=bold:size=10}
+CPU1: ${cpu cpu1}% ${cpubar cpu1}
+CPU2: ${cpu cpu2}% ${cpubar cpu2}
+CPU3: ${cpu cpu3}% ${cpubar cpu3}
+CPU4: ${cpu cpu4}% ${cpubar cpu4}
+CPU5: ${cpu cpu5}% ${cpubar cpu5}
+CPU6: ${cpu cpu6}% ${cpubar cpu6}
+CPU7: ${cpu cpu7}% ${cpubar cpu7}
+CPU8: ${cpu cpu8}% ${cpubar cpu8}
+
+RAM $alignr $mem / $memmax
+${membar}
+SWAP $alignr $swap / $swapmax
+$swapbar
+
+#Esto nos muestra la temperatura de los procesadores
+Temperatura: $alignr ${hwmon 0 temp 1} C
+
+#Esto muestra la informacion de la GPU
+${font Ubuntu:style=bold:size=12}GPU ${exec nvidia-smi --query-gpu=gpu_name --format=csv,noheader,nounits} $hr
+${font Ubuntu:style=bold:size=10}
+GPU: ${alignr} ${exec nvidia-smi | grep % | cut -c 61-63} %
+VRAM: ${alignr} ${color} ${exec nvidia-smi | grep % | cut -c 37-40} MB
+GPU temp: ${alignr} ${execi 60 nvidia-settings -query [gpu:0]/GPUCoreTemp -t} C
+GPU Power: ${alignr} ${exec nvidia-smi | grep % | cut -c 21-23} W
+
+#Esto nos muestra la conexion con una barra y su potencia
+${font Ubuntu:style=bold:size=14}Red ${wireless_essid wlp3s0} $hr
+${font Ubuntu:style=bold:size=10}
+IP: $alignr ${addr wlp3s0}
+Intensidad WIFI $alignr ${wireless_link_qual wlp3s0}%
+${wireless_link_bar 5,300 wlp3s0}
+#Esto nos muestra la velocidad de descarga y subida de internet con graficos
+Descarga $alignr ${downspeed wlp3s0}/s
+${downspeedgraph wlp3s0 20,300 ffffff ffffff}
+Subida $alignr ${upspeed wlan0}/s
+${upspeedgraph wlp3s0 20,300 ffffff ffffff}
+
+#Esto nos muestra la particion Home, la RAM y la sawp con una barra cada una y sus datos
+${font Ubuntu:style=bold:size=14}Discos $hr
+${font Ubuntu:style=bold:size=10}
+Root: $alignr ${fs_used /} / ${fs_size /}
+${fs_bar /}
+Home: $alignr ${fs_used /home} / ${fs_size /home}
+${fs_bar /home}
+
+#Esto nos muestra el estado de la bateria con una barra
+#${font Ubuntu:style=bold:size=14}Bateria $hr
+#${font Ubuntu:style=bold:size=10} ${battery BAT0} $alignr
+#${battery_bar BAT0}
+
+#Esto muestra el uso de la CPU de las aplicaciones que mas hacen uso de ella
+${font Ubuntu:style=bold:size=14}Uso CPU aplicaciones $hr
+${font Ubuntu:style=bold:size=10}${top name 1}$alignr${top cpu 1}%
+${top name 2}$alignr${top cpu 2}%
+${top name 3}$alignr${top cpu 3}%
+
+#Esto nos muestra el procentaje de RAM que usan las aplicaciones de ella
+${font Ubuntu:style=bold:size=14}Uso RAM aplicaciones $hr
+${font Ubuntu:style=bold:size=10}${top_mem name 1}$alignr${top_mem mem 1}%
+${top_mem name 2}$alignr${top_mem mem 2}%
+${top_mem name 3}$alignr${top_mem mem 3}%
